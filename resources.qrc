@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/folder-with-pictures.png</file>
+        <file>resources/record-button.png</file>
+        <file>resources/recording-led-off.png</file>
+        <file>resources/recording-led-on.png</file>
+        <file>resources/still-screenshot.png</file>
+        <file>resources/camera.png</file>
+        <file>resources/screenrecorder.rc</file>
+        <file>resources/region-button.png</file>
+        <file>resources/full-screen-button.png</file>
+        <file>resources/microphone-off-button.png</file>
+        <file>resources/microphone-on-button.png</file>
+        <file>resources/about-button.png</file>
+        <file>resources/private.key</file>
+        <file>resources/watermark.png</file>
+        <file>resources/mouse.png</file>
+        <file>resources/no-mouse.png</file>
+        <file>resources/microphone.png</file>
+        <file>resources/no-microphone.png</file>
+        <file>resources/certificate.png</file>
+        <file>resources/lens-button.png</file>
+        <file>resources/window-button.png</file>
+        <file>resources/crosscursor.png</file>
+        <file>resources/blue-footed-booby-with-camera.ico</file>
+        <file>resources/blue-footed-booby-with-camera.png</file>
+        <file>resources/select-window.png</file>
+        <file>resources/select-region.png</file>
+    </qresource>
+</RCC>

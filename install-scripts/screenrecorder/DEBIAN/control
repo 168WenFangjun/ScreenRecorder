@@ -1,0 +1,22 @@
+Package: com.osletek.screenrecorder
+Name: Example Package
+Description: An example package. This longer description will load when a depiction URL is not specified.
+Author: Ms. Example <example@example.com>
+Maintainer: Example, Inc. <example-inc@example.com>
+Version: 1.0-1
+Section: Addons (SpringBoard)
+Pre-Depends:
+Depends:
+Recommends:
+Suggests:
+Enhances:
+Replaces:
+Conflicts:
+Breaks:
+Provides:
+Architecture: amd64
+Homepage: https://example.com
+Website: https://example.com
+Depiction: 
+Icon: /Applications/Example.app/AppIcon60x60@2x.png
+Tag: cydia::commercial, purpose::console/daemon/extension/library/uikit/x, role::enduser/hacker/developer, compatible::ios10
