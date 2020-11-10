@@ -65,13 +65,13 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 INCLUDE_DIRECTORIES(
     ${QT_INCLUDES}
     ${Qt5Widgets_INCLUDES}
-    ../libs/zlib-1.2.8
-    ../libs/libpng-1.6.21
-    ../libs/jpeg-9
-    ../libs/openssl/include
-    ../libs/alsa-lib-1.1.4.1/include
-    ../libs/giflib-5.1.4/lib
-    ../libs/ffmpeg
+    ../.libs/zlib-1.2.8
+    ../.libs/libpng-1.6.21
+    ../.libs/jpeg-9
+    ../.libs/openssl/include
+    ../.libs/alsa-lib-1.1.4.1/include
+    ../.libs/giflib/lib
+    ../.libs/ffmpeg
     ../License
     ../Updater
     Gif
@@ -119,6 +119,15 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     LINK_DIRECTORIES(
         ${CMAKE_CURRENT_SOURCE_DIR}/../libs/build/linux/bin/
         ${Qt5X11Extras_DIR}/../../../lib/
+	/home/dev/.libs/ffmpeg/libavcodec/    
+	/home/dev/.libs/ffmpeg/libavfilter/   
+	/home/dev/.libs/ffmpeg/libavresample/ 
+	/home/dev/.libs/ffmpeg/libpostproc/   
+	/home/dev/.libs/ffmpeg/libswscale/    
+	/home/dev/.libs/ffmpeg/libavdevice/   
+	/home/dev/.libs/ffmpeg/libavformat/   
+	/home/dev/.libs/ffmpeg/libavutil/     
+	/home/dev/.libs/ffmpeg/libswresample
     )
     SET(SSLLibs
         crypto
@@ -127,9 +136,9 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     )
      SET(FFMpegLibs
         avcodec
-#        avdevice
+        avdevice
         avformat
-#        avfilter
+        avfilter
         avutil
         swresample
         swscale
