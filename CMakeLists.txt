@@ -71,7 +71,7 @@ INCLUDE_DIRECTORIES(
     ../libs/openssl/include
     ../libs/alsa-lib-1.1.4.1/include
     ../libs/giflib-5.1.4/lib
-    ../libs/ffmpeg-4.1
+    ../libs/ffmpeg
     ../License
     ../Updater
     Gif
