@@ -1,10 +1,23 @@
 #to build on MacOS/Ubuntu from command line
 #mkdir ../ScreenRecorder-build
 #./ccmake ../ScreenRecorder
+# or try
+#CMAKE_INCLUDE_PATH=/home/dev/osaeed/Qt/5.15.0/Src/qtwebengine/src/3rdparty/chromium/third_party/mesa_headers/ ccmake ..
 # c to configure, get some errors, copy name of missing Qt package, exit, find ~/ -name Qt5CoreConfig.cmake, copy path, retry
 # after compiling code, to run application, in ScreenRecorder-build:
 #ln -s /home/dev/oosman/Qt5.12.1/Tools/QtCreator/lib/Qt/plugins/platforms platforms
 #
+#LINUX
+#Qt5Concurrent_DIR                /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Concurrent
+#Qt5Core_DIR                      /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Core
+#Qt5Gui_DIR                       /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Gui
+#Qt5MultimediaWidgets_DIR         /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5MultimediaWidgets
+#Qt5Multimedia_DIR                /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Multimedia
+#Qt5Network_DIR                   /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Network
+#Qt5Svg_DIR                       /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Svg
+#Qt5Widgets_DIR                   /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Widgets
+#Qt5X11Extras_DIR                 /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5X11Extras
+
 # CMAKE_OSX_SYSROOT 
 #/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk
 #( you can get SDKs from https://github.com/phracker/MacOSX-SDKs/releases )
@@ -16,15 +29,15 @@
 #make
 # then for mac, run ../ScreenRecorder/install-scripts/macinstall.sh
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.19)
 SET(CMAKE_AUTOMOC ON)
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_C_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS} -Wall -Wextra" )
-SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS} -Wall -Wextra" )
-set(CMAKE_C_FLAGS_DEBUG "-g -DMYDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -DMYDEBUG")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -O3")
+SET(CMAKE_C_FLAGS  -Wall)
+SET(CMAKE_CXX_FLAGS  -Wall)
+#set(CMAKE_C_FLAGS_DEBUG -g -DMYDEBUG)
+#set(CMAKE_CXX_FLAGS_DEBUG -g -DMYDEBUG)
+set(CMAKE_C_FLAGS_RELEASE  -s -O3)
+set(CMAKE_CXX_FLAGS_RELEASE  -s -O3)
 
 #rm -fr ../ScreenRecorder-build/*
 #rm -fr ../ScreenRecorder-build/CMakeCache.txt
@@ -32,19 +45,19 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -O3")
 SET(PROJECT_NAME ScreenRecorder)
 PROJECT(${PROJECT_NAME})
 
-SET(HOME_DIR "/Users/oosman")
-#SET(HOME_DIR "/Users/OsleTek")
+SET(HOME_DIR /Users/oosman)
+#SET(HOME_DIR /Users/OsleTek)
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(_MACHINE_ARCH_FLAG "/machine:x86")
-    ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+IF( MATCHES Windows)
+    set(_MACHINE_ARCH_FLAG /machine:x86)
+    ENDIF( MATCHES Windows)
+IF(UNIX)
 #apt-file search Qt5MultimediaConfig.cmake
-#sudo apt install qtmultimedia5-dev
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+#
+ENDIF(UNIX)
 
-SET(CMAKE_CXX_STANDARD 14)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+SET(CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_FLAGS  -std=c++17)
 #add_compile_options(-std=c++11)
 #add_compile_options(-stdlib=libstdc++)
 #add_compile_options(-stdlib=libc++)
@@ -57,32 +70,30 @@ FIND_PACKAGE(Qt5Network REQUIRED)
 FIND_PACKAGE(Qt5Multimedia REQUIRED)
 FIND_PACKAGE(Qt5MultimediaWidgets REQUIRED)
 
-#FIND_PACKAGE(Qt5WinExtras REQUIRED)
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+IF(UNIX)
 FIND_PACKAGE(Qt5X11Extras REQUIRED)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+#sudo apt-get install -y libqt5x11extras5-dev
+ELSEIF(WIN32)
+FIND_PACKAGE(Qt5WinExtras REQUIRED)
+ENDIF(UNIX)
 
 INCLUDE_DIRECTORIES(
-    ${QT_INCLUDES}
-    ${Qt5Widgets_INCLUDES}
     ../.libs/zlib-1.2.8
     ../.libs/libpng-1.6.21
     ../.libs/jpeg-9
     ../.libs/openssl/include
-    ../.libs/alsa-lib-1.1.4.1/include
+    ../.libs/alsa-lib/include
     ../.libs/giflib/lib
     ../.libs/ffmpeg
     ../License
     ../Updater
     Gif
     .
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 ADD_DEFINITIONS(
-    ${Qt5Widgets_DEFINITIONS}
-    ${Qt5Concurrent_DEFINITIONS}
+    
+    
 )
 
 # this will run uic on .ui files:
@@ -112,22 +123,22 @@ ADD_DEFINITIONS(
     -DNONDLL
 )
 
-SET(SoundLibs "")
-SET(SSLLibs "")
-SET(X11Libs "")
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+SET(SoundLibs )
+SET(SSLLibs )
+SET(X11Libs )
+IF(UNIX)
     LINK_DIRECTORIES(
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/build/linux/bin/
-        ${Qt5X11Extras_DIR}/../../../lib/
-	/home/dev/.libs/ffmpeg/libavcodec/    
-	/home/dev/.libs/ffmpeg/libavfilter/   
-	/home/dev/.libs/ffmpeg/libavresample/ 
-	/home/dev/.libs/ffmpeg/libpostproc/   
-	/home/dev/.libs/ffmpeg/libswscale/    
-	/home/dev/.libs/ffmpeg/libavdevice/   
-	/home/dev/.libs/ffmpeg/libavformat/   
-	/home/dev/.libs/ffmpeg/libavutil/     
-	/home/dev/.libs/ffmpeg/libswresample
+        /home/dev/.libs/ffmpeg/libavcodec/
+        /home/dev/.libs/ffmpeg/libavfilter/
+        /home/dev/.libs/ffmpeg/libavresample/
+        /home/dev/.libs/ffmpeg/libpostproc/
+        /home/dev/.libs/ffmpeg/libswscale/
+        /home/dev/.libs/ffmpeg/libavdevice/
+        /home/dev/.libs/ffmpeg/libavformat/
+        /home/dev/.libs/ffmpeg/libavutil/
+        /home/dev/.libs/ffmpeg/libswresample/
+        /home/dev/.libs/giflib/lib/.libs/
+        /home/dev/.libs/alsa-lib/src/.libs/
     )
     SET(SSLLibs
         crypto
@@ -171,11 +182,11 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     ADD_DEFINITIONS(
         -DLinux
     )
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+ENDIF(UNIX)
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+IF( MATCHES Darwin)
     LINK_DIRECTORIES(
-        ${HOME_DIR}/work/libs/build/osx/bin
+        /work/libs/build/osx/bin
     )
     SET(SSLLibs
         crypto
@@ -203,22 +214,22 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     SET(PNGLib
         png16
         )
-    SET(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT})
-    SET(MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME}.ico)
-    SET(App_ICON ${CMAKE_CURRENT_SOURCE_DIR}/resources/${PROJECT_NAME}.ico)
-    SET_SOURCE_FILES_PROPERTIES(${App_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME )
+    SET(MACOSX_BUNDLE_ICON_FILE .ico)
+    SET(App_ICON /resources/.ico)
+    SET_SOURCE_FILES_PROPERTIES( PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     ADD_DEFINITIONS(
         -DDarwin
     )
 
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+ENDIF( MATCHES Darwin)
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+IF( MATCHES Windows)
     ADD_DEFINITIONS(
         -DWin64
     )
     LINK_DIRECTORIES(
-        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/build/win64
+        /../libs/build/win64
     )
     SET(SSLLibs
         ssl-1_1-x64
@@ -259,7 +270,7 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         WindowsWindowEnumerator.cpp
         )
     SET(PLATFORM WIN32)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+ENDIF( MATCHES Windows)
 
 SET(PROJECT_SOURCES
     cmdutils.c
@@ -322,10 +333,9 @@ SET(PROJECT_SOURCES
     ${PROJECT_LINUX_SOURCES}
 )
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    SET(CMAKE_INSTALL_RPATH "/usr/local/bin/bf-booby-screen-recorder")
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
+IF(UNIX)
+    SET(CMAKE_INSTALL_RPATH /usr/local/bin/bf-booby-screen-recorder)
+ENDIF(UNIX)
 
 ADD_EXECUTABLE(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
     ${App_ICON}
@@ -362,4 +372,3 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     SET_TARGET_PROPERTIES(${PROJECT} PROPERTIES MACOSX_BUNDLE TRUE)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-

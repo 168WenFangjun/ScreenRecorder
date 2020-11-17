@@ -220,7 +220,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_encoder.read_func = nullptr;
     m_encoder.seek_func = seekFunction;
     m_encoder.opaque_io_data = (void*)this;
-    m_encoder.video_codec_id = AV_CODEC_ID_MPEG4;
+    m_encoder.video_codec_id = AV_CODEC_ID_H264;//AV_CODEC_ID_MPEG4;
     m_encoder.audio_codec_id = AV_CODEC_ID_AAC;
 
     connect(m_window_update_timer, &QTimer::timeout, this, &MainWindow::updateWindowTitleAndButton);
@@ -811,7 +811,7 @@ void MainWindow::setMovieFormat(const QString &format)
 {
     if(format == "mp4")
     {
-        m_encoder.video_codec_id = AV_CODEC_ID_MPEG4;//AV_CODEC_ID_H264
+        m_encoder.video_codec_id = AV_CODEC_ID_H264;//AV_CODEC_ID_MPEG4;
         m_encoder.audio_codec_id = AV_CODEC_ID_AAC;
     }
     else if(format == "ogg")
@@ -838,7 +838,8 @@ QString MainWindow::getMovieFormat() const
     {
         return "mkv";
     }
-    else if(m_encoder.video_codec_id == AV_CODEC_ID_MPEG4 &&
+    else if((m_encoder.video_codec_id == AV_CODEC_ID_MPEG4 ||
+            m_encoder.video_codec_id == AV_CODEC_ID_H264) &&
                 m_encoder.audio_codec_id == AV_CODEC_ID_AAC)
     {
         return "mp4";
