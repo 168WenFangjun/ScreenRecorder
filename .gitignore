@@ -34,4 +34,5 @@
 #CMake
 CMakeLists.txt.user
 CMakeLists.txt.user*
+build*
 

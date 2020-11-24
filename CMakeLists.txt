@@ -5,20 +5,18 @@
 #CMAKE_INCLUDE_PATH=/home/dev/osaeed/Qt/5.15.0/Src/qtwebengine/src/3rdparty/chromium/third_party/mesa_headers/ ccmake ..
 # c to configure, get some errors, copy name of missing Qt package, exit, find ~/ -name Qt5CoreConfig.cmake, copy path, retry
 # after compiling code, to run application, in ScreenRecorder-build:
-#ln -s /home/dev/oosman/Qt5.12.1/Tools/QtCreator/lib/Qt/plugins/platforms platforms
+#ln -s ${HOME}/${DOCKERUSER}/Qt5.152.0/Tools/QtCreator/lib/Qt/plugins/platforms platforms
 #
 #LINUX
-#Qt5Concurrent_DIR                /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Concurrent
-#Qt5Core_DIR                      /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Core
-#Qt5Gui_DIR                       /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Gui
-#Qt5MultimediaWidgets_DIR         /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5MultimediaWidgets
-#Qt5Multimedia_DIR                /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Multimedia
-#Qt5Network_DIR                   /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Network
-#Qt5Svg_DIR                       /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Svg
-#Qt5Widgets_DIR                   /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5Widgets
-#Qt5X11Extras_DIR                 /home/dev/osaeed/Qt/5.15.0/gcc_64/lib/cmake/Qt5X11Extras
-
-# CMAKE_OSX_SYSROOT 
+# Qt5Concurrent_DIR                /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Concurrent        
+# Qt5Core_DIR                      /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Core
+# Qt5Gui_DIR                       /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Gui
+# Qt5MultimediaWidgets_DIR         /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5MultimediaWidgets 
+# Qt5Multimedia_DIR                /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Multimedia        
+# Qt5Network_DIR                   /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Network           
+# Qt5Svg_DIR                       /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Svg
+# Qt5Widgets_DIR                   /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5Widgets           
+# Qt5X11Extras_DIR                 /home/dev/oosman/Qt/5.15.0/gcc_64/lib/cmake/Qt5X11Extras# CMAKE_OSX_SYSROOT 
 #/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk
 #( you can get SDKs from https://github.com/phracker/MacOSX-SDKs/releases )
 # Qt5Core_DIR /Users/oosman/Qt/5.5/clang_64/lib/cmake/Qt5Core
@@ -30,14 +28,16 @@
 # then for mac, run ../ScreenRecorder/install-scripts/macinstall.sh
 
 cmake_minimum_required(VERSION 3.19)
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_C_FLAGS  -Wall)
-SET(CMAKE_CXX_FLAGS  -Wall)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_C_FLAGS  -Wall)
+set(CMAKE_CXX_FLAGS  -Wall)
 #set(CMAKE_C_FLAGS_DEBUG -g -DMYDEBUG)
 #set(CMAKE_CXX_FLAGS_DEBUG -g -DMYDEBUG)
 set(CMAKE_C_FLAGS_RELEASE  -s -O3)
 set(CMAKE_CXX_FLAGS_RELEASE  -s -O3)
+set(LIBS_DIR "$ENV{HOME}/$ENV{DOCKERUSER}/.leila/lib")
+set(QT_DIR "$ENV{HOME}/$ENV{DOCKERUSER}/Qt/5.15.0")
 
 #rm -fr ../ScreenRecorder-build/*
 #rm -fr ../ScreenRecorder-build/CMakeCache.txt
@@ -78,13 +78,13 @@ FIND_PACKAGE(Qt5WinExtras REQUIRED)
 ENDIF(UNIX)
 
 INCLUDE_DIRECTORIES(
-    ../.libs/zlib-1.2.8
-    ../.libs/libpng-1.6.21
-    ../.libs/jpeg-9
-    ../.libs/openssl/include
-    ../.libs/alsa-lib/include
-    ../.libs/giflib/lib
-    ../.libs/ffmpeg
+    ${LIBS_DIR}/zlib-1.2.11
+    ${LIBS_DIR}/libpng-1.6.37
+    ${LIBS_DIR}/jpegsr9c
+    ${LIBS_DIR}/openssl/include
+    ${LIBS_DIR}/alsa/include
+    ${LIBS_DIR}/gif/lib
+    ${LIBS_DIR}/ffmpeg
     ../License
     ../Updater
     Gif
@@ -128,17 +128,17 @@ SET(SSLLibs )
 SET(X11Libs )
 IF(UNIX)
     LINK_DIRECTORIES(
-        /home/dev/.libs/ffmpeg/libavcodec/
-        /home/dev/.libs/ffmpeg/libavfilter/
-        /home/dev/.libs/ffmpeg/libavresample/
-        /home/dev/.libs/ffmpeg/libpostproc/
-        /home/dev/.libs/ffmpeg/libswscale/
-        /home/dev/.libs/ffmpeg/libavdevice/
-        /home/dev/.libs/ffmpeg/libavformat/
-        /home/dev/.libs/ffmpeg/libavutil/
-        /home/dev/.libs/ffmpeg/libswresample/
-        /home/dev/.libs/giflib/lib/.libs/
-        /home/dev/.libs/alsa-lib/src/.libs/
+        ${LIBS_DIR}/ffmpeg/libavcodec/
+        ${LIBS_DIR}/ffmpeg/libavfilter/
+        ${LIBS_DIR}/ffmpeg/libavresample/
+        ${LIBS_DIR}/ffmpeg/libpostproc/
+        ${LIBS_DIR}/ffmpeg/libswscale/
+        ${LIBS_DIR}/ffmpeg/libavdevice/
+        ${LIBS_DIR}/ffmpeg/libavformat/
+        ${LIBS_DIR}/ffmpeg/libavutil/
+        ${LIBS_DIR}/ffmpeg/libswresample/
+        ${LIBS_DIR}/gif/lib/.libs/
+        ${LIBS_DIR}/alsa/src/.libs/
     )
     SET(SSLLibs
         crypto
@@ -367,6 +367,11 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS -L/usr/local/bin/bf-booby-screen-recorder/)
+    execute_process(COMMAND bash "-c" "/bin/ln -sf ${QT_DIR}/gcc_64/plugins/platforms platforms"
+    OUTPUT_VARIABLE LN_CMD_RES
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
