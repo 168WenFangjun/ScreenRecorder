@@ -83,7 +83,7 @@ INCLUDE_DIRECTORIES(
     ${LIBS_DIR}/jpegsr9c
     ${LIBS_DIR}/openssl/include
     ${LIBS_DIR}/alsa/include
-    ${LIBS_DIR}/gif/lib
+    ${LIBS_DIR}/libgif/lib
     ${LIBS_DIR}/ffmpeg
     ../License
     ../Updater
@@ -137,7 +137,7 @@ IF(UNIX)
         ${LIBS_DIR}/ffmpeg/libavformat/
         ${LIBS_DIR}/ffmpeg/libavutil/
         ${LIBS_DIR}/ffmpeg/libswresample/
-        ${LIBS_DIR}/gif/lib/.libs/
+        ${LIBS_DIR}/libgif/lib/.libs/
         ${LIBS_DIR}/alsa/src/.libs/
     )
     SET(SSLLibs
