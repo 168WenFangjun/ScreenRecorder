@@ -17,6 +17,6 @@ popd
 mkdir -p build
 pushd build
 	rm -fr *
-	CMAKE_PREFIX_PATH=$HOME/$DOCKERUSER/Qt/5/5.15.2/gcc_64/lib/cmake/ CMAKE_BUILD_TYPE=Debug cmake ..
+	CMAKE_PREFIX_PATH=$HOME/$DOCKERUSER/Qt/5/5.15.2/gcc_64/lib/cmake/ cmake -DCMAKE_BUILD_TYPE=Debug	  ..
 	make -j$(getconf _NPROCESSORS_ONLN)
 popd
