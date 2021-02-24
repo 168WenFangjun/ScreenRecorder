@@ -82,8 +82,15 @@ void TransparentMaximizedWindow::show(int width, int height, QScreen* screen)
 QRect TransparentMaximizedWindow::getRectForBorder() const
 {
     QRect rect;
-    rect.setTopLeft(m_point_start);
-    rect.setBottomRight(m_point_stop);
+
+    int x = (m_point_start.x() < m_point_stop.x()) ? m_point_start.x() : m_point_stop.x();
+    int y = (m_point_start.y() < m_point_stop.y()) ? m_point_start.y() : m_point_stop.y();
+    rect.setTopLeft(QPoint(x, y));
+
+    x = (m_point_start.x() >= m_point_stop.x()) ? m_point_start.x() : m_point_stop.x();
+    y = (m_point_start.y() >= m_point_stop.y()) ? m_point_start.y() : m_point_stop.y();
+    rect.setBottomRight(QPoint(x, y));
+
     return rect;
 }
 
@@ -161,6 +168,7 @@ void TransparentMaximizedWindow::paintEvent(QPaintEvent *)
     if(m_capturing)
     {
         drawHole(rect);
+        qDebug() << "draw hole " << rect;
     }
     drawRectBorder(painter, rect);
 }

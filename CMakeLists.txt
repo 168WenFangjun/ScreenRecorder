@@ -105,7 +105,7 @@ QT5_WRAP_UI(PROJECT_UI_HDRS
     CrossCursorWidget.ui
     FFMpegRunnerDialog.ui
     MainWindow.ui
-    PreviewWidget.ui
+    Playback/PreviewDialog.ui
     Settings.ui
     TabDialog.ui
     TransparentMaximizedWindow.ui
@@ -322,11 +322,11 @@ SET(PROJECT_SOURCES
     NullAudioIn.h
     Playback/ffplay3.c
     Playback/ffplay3.h
-    PreviewWidget.cpp
-    PreviewWidget.h
+    Playback/PreviewDialog.cpp
+    Playback/PreviewDialog.h
     Settings.cpp
-    SocketReader.cpp
-    SocketReader.h
+    Playback/SocketReader.cpp
+    Playback/SocketReader.h
     SocketWriter.cpp
     SocketWriter.h
     TabDialog.cpp
