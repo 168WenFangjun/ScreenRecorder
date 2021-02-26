@@ -36,6 +36,7 @@ ssize_t SocketWriter::BfWrite(uint8_t *buf, int buf_size)
             break;
         }
         total_sent += bytes_sent;
+        usleep(10000);//osm
     }
     return total_sent;
 }

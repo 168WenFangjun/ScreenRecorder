@@ -80,7 +80,8 @@ ENDIF(UNIX)
 INCLUDE_DIRECTORIES(
     ${LIBS_DIR}/zlib-1.2.11
     ${LIBS_DIR}/libpng-1.6.37
-    ${LIBS_DIR}/jpegsr9c
+    ${LIBS_DIR}/turbojpeg
+#    ${LIBS_DIR}/jpegsr9c
     ${LIBS_DIR}/openssl/include
     ${LIBS_DIR}/alsa/include
     ${LIBS_DIR}/libgif/lib
@@ -139,6 +140,7 @@ IF(UNIX)
         ${LIBS_DIR}/ffmpeg/libavutil/
         ${LIBS_DIR}/ffmpeg/libswresample/
         ${LIBS_DIR}/libgif/lib/.libs/
+        ${LIBS_DIR}/turbojpeg/build/
         ${LIBS_DIR}/alsa/src/.libs/
     )
     SET(SSLLibs
@@ -166,6 +168,7 @@ IF(UNIX)
 #ln -s /usr/lib/x86_64-linux-gnu/libpulse-mainloop-glib.so.0.0.5
     SET(JPEGLib
         jpeg
+        turbojpeg
         )
     SET(GifLib
         gif
@@ -324,9 +327,11 @@ SET(PROJECT_SOURCES
     Playback/ffplay3.h
     Playback/PreviewDialog.cpp
     Playback/PreviewDialog.h
-    Settings.cpp
+    Playback/ScreenStreamer.h
+    Playback/ScreenStreamer.cpp
     Playback/SocketReader.cpp
     Playback/SocketReader.h
+    Settings.cpp
     SocketWriter.cpp
     SocketWriter.h
     TabDialog.cpp

@@ -23,12 +23,14 @@ public:
     void RecieveData();
     int Readfn(uint8_t *buf, int buf_size);
     int64_t Seekfn(int64_t offset, int whence);
-    bool Playback(const std::string &output_file, std::function<void(const QImage&img)> renderImageCb);
+    bool PlaybackVideo(const std::string &output_file, std::function<void(const QImage&img)> renderImageCb);
+    bool PlaybackImages(std::function<void(const QImage&img)> renderImageCb);
     int GotFrame(AVFrame* frame, enum AVMediaType media_type);
     QImage AvframeToQImage(const AVFrame *pFrame) const;
 
     Decoder* decoder_ = nullptr;
 protected:
+    int ReadSocketData(uint8_t *buf, int buf_size);
     int fp_;
     struct sockaddr_in sa_;
     std::future<void> reader_thread_;
