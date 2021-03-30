@@ -465,11 +465,11 @@ void MainWindow::selectRegionForCapture(const QPoint &top_left, const QRect &bor
     if(m_capture_mode == CaptureMode::Region)
     {
         m_region_top_left = top_left;
-        m_region = border_rect;
-        qDebug() << "CaptureMode::Region ("
-                 << border_rect.topLeft()
-                 << "), ("
-                 << border_rect.bottomRight() << "),";
+        m_region = QRect(top_left.x(),
+                         top_left.y(),
+                         border_rect.width()/2*2,
+                         border_rect.height()/2*2);
+        qDebug() << "selectRegionForCapture" << m_region;
     }
     else if(m_capture_mode == CaptureMode::Window)
     {
