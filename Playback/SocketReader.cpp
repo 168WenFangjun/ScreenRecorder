@@ -1,8 +1,6 @@
 #include "SocketReader.h"
 
 #include <QImage>
-#include <QDebug>
-
 #include <fcntl.h>
 #include <memory.h>
 #include <stdio.h>
@@ -68,14 +66,13 @@ SocketReader::~SocketReader()
 
 void SocketReader::RecieveData()
 {
-    int buf_size = 8192*10;
+    int buf_size = 8192;
     static uint8_t * buf = (uint8_t*) malloc(buf_size);
 
     reader_thread_ = std::async(std::launch::async, [this, buf_size](){
         while(!stop_)
         {
             socklen_t fromlen = sizeof IN_CLASSA_HOST;
-            //osm: todo use select here so we don't block forever
             ssize_t recsize = recvfrom(fp_, (void*)buf, buf_size, 0, (struct sockaddr*)&sa_, &fromlen);
 
 //            mylog("recvd %i bytes", recsize);
@@ -91,7 +88,7 @@ void SocketReader::RecieveData()
 
             static size_t total = 0;
             total += recsize;
-//            mylog("total recvd: %i", total);
+            mylog("total recvd: %i", total);
         }
     });
 }
@@ -105,14 +102,17 @@ int64_t SocketReader::Seekfn(int64_t offset, int whence)
     return offset;
 }
 
-int SocketReader::ReadSocketData(uint8_t *buf, int buf_size)
+int SocketReader::Readfn(uint8_t *buf, int buf_size)
 {
+    if(decoder_->fp_)
+    {
+        return read(decoder_->fp_, buf, buf_size);
+    }
+
     std::unique_lock<std::mutex> lk(m_);
-    cv_.wait_for(lk, std::chrono::seconds(1), [this]{
-        return (stop_ || buffer_.size() > 0);
+    cv_.wait(lk, [this]{
+        return (buffer_.size() > 0);
     });
-    if(stop_)
-    { return 0; }
     int i;
     for(i = 0; i < buf_size && buffer_.size() > 0; ++i)
     {
@@ -121,75 +121,8 @@ int SocketReader::ReadSocketData(uint8_t *buf, int buf_size)
     }
     return i;
 }
-int SocketReader::Readfn(uint8_t *buf, int buf_size)
-{
-    if(decoder_->fp_)
-    {
-        return read(decoder_->fp_, buf, buf_size);
-    }
 
-    return ReadSocketData(buf, buf_size);
-}
-
-bool SocketReader::PlaybackImages(std::function<void(const QImage&img)> renderImageCb)
-{
-    renderImageCb_ = renderImageCb;
-    playback_thread_ = std::async(std::launch::async, [this,renderImageCb](){
-        constexpr int buf_size = 8192*4;
-        uint8_t buf[buf_size];
-        size_t jpeg_data_sz = 1024*1024;
-        size_t jpeg_data_pos = 0;
-        uint8_t* jpeg_data = nullptr;
-        jpeg_data = (uint8_t*)malloc(jpeg_data_sz);
-        while(true)
-        {
-            int bytes_read = ReadSocketData(buf, buf_size);
-
-            bool found_jpeg_header = false;
-            ssize_t idx = 0;
-            for(; idx < bytes_read - 10; ++idx)
-            {
-//jpeg header                ff d8 ff e0 00 10 4a 46  49 46
-                if(buf[idx] == 0xff &&
-                        buf[idx+1] == 0xd8 &&
-                        buf[idx+2] == 0xff &&
-                        buf[idx+3] == 0xe0 &&
-                        buf[idx+4] == 0x00 &&
-                        buf[idx+5] == 0x10 &&
-                        buf[idx+6] == 0x4a &&
-                        buf[idx+7] == 0x46 &&
-                        buf[idx+8] == 0x49 &&
-                        buf[idx+9] == 0x46
-                        )
-                {
-                    found_jpeg_header = true;
-                    break;
-                }
-            }
-            if(found_jpeg_header)
-            {
-                memcpy(&jpeg_data[jpeg_data_pos], buf, idx);
-                jpeg_data_pos += idx;
-                static int counter = 0;
-                qDebug() << "Complete jpeg recvd " << counter++;
-                QImage img;
-                img.loadFromData(jpeg_data, jpeg_data_pos, "JPG");
-                if(!img.isNull()) renderImageCb(img);
-
-                jpeg_data_pos = 0;
-                memcpy(&jpeg_data[jpeg_data_pos], &buf[idx], bytes_read-idx);
-                jpeg_data_pos += bytes_read-idx;
-            }
-            else
-            {
-                memcpy(&jpeg_data[jpeg_data_pos], buf, bytes_read);
-                jpeg_data_pos += bytes_read;
-            }
-        }
-    });
-    return true;
-}
-bool SocketReader::PlaybackVideo(const std::string &output_file, std::function<void(const QImage&img)> renderImageCb)
+bool SocketReader::Playback(const std::string &output_file, std::function<void(const QImage&img)> renderImageCb)
 {
     if(decoder_)
     {

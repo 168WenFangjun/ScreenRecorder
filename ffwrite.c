@@ -109,26 +109,16 @@ static AVStream *add_stream(AVFormatContext *oc, AVCodec **codec,
         c->time_base.num = 1;
         c->gop_size      = 12; /* emit one intra frame every twelve frames at most */
         c->pix_fmt       = STREAM_PIX_FMT;
-        switch(c->codec_id)
-        {
-        case AV_CODEC_ID_MPEG2VIDEO: {
+        if (c->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
             /* just for testing, we also add B frames */
             c->max_b_frames = 2;
-            break;
         }
-        case AV_CODEC_ID_MPEG1VIDEO: {
+        if (c->codec_id == AV_CODEC_ID_MPEG1VIDEO) {
             /* Needed to avoid using macroblocks in which some coeffs overflow.
              * This does not happen with normal video, it just happens here as
              * the motion of the chroma plane does not match the luma plane. */
             c->mb_decision = 2;
-            break;
         }
-        case AV_CODEC_ID_VP8:
-        case AV_CODEC_ID_VP9: {
-//            VPxEncoderContext *ctx = (VPxEncoderContext *)c->priv_data;
-            break;
-        }
-        }//switch(c->codec_id)
     break;
 
     default:

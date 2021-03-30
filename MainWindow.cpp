@@ -14,6 +14,10 @@
 #include <QUrl>
 #include <QWindow>
 
+
+#include <stdio.h>
+#include <time.h>
+
 #include "../DS/circularbuffer.h"
 #include "AboutWidget.h"
 #include "AudioFrameProducer.h"
@@ -39,7 +43,6 @@
 //osm
 #include "Playback/PreviewDialog.h"
 #include "Playback/SocketReader.h"
-#include "Playback/ScreenStreamer.h"
 
 extern "C" int64_t 	av_gettime (void);
 extern "C" int64_t av_gettime_relative(void);
@@ -213,10 +216,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_camera_widget(new CameraWidget(this))
     , m_window_enumerator(InterfaceFactory::createWindowEnumeratorInterface())
     , m_mouse_tracker(new QTimer(this))
-    , m_ffp{std::make_unique<LinuxFileWriter>(),
-//            std::make_unique<SocketWriter>()
-            nullptr
-            }//osm
+    , m_ffp{std::make_unique<LinuxFileWriter>(), std::make_unique<SocketWriter>()}//osm
 {
     qDebug() << "MainWindow" << QThread::currentThreadId()
              << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -333,16 +333,13 @@ int MainWindow::writeFunction(void *opaque, uint8_t *buf, int buf_size)
     MainWindow *self = (MainWindow*)opaque;
 //    mylog("sending %i bytes over socket\n", buf_size);
     int bytes_written = self->m_ffp[0]->BfWrite(buf, buf_size);
-    if(self->m_ffp[1])
+    int bytes_sent = self->m_ffp[1]->BfWrite(buf, buf_size);
+    if(bytes_sent < 1)
     {
-        int bytes_sent = self->m_ffp[1]->BfWrite(buf, buf_size);
-        if(bytes_sent < 1)
-        {
-            mylog("errro sending bytes, errno %i", errno);
-            exit(-1);
-        }
+        mylog("errro sending bytes, errno %i", errno);
+        exit(-1);
     }
-    return bytes_written;
+    return bytes_sent;
 }
 
 int64_t MainWindow::seekFunction(void *opaque, int64_t offset, int whence)
@@ -567,7 +564,7 @@ void MainWindow::stoppedRecording()
     {
         deinitializeEncoder(&m_encoder);
         m_ffp[0]->BfClose();
-        if (m_ffp[1]) {m_ffp[1]->BfClose();}
+        m_ffp[1]->BfClose();
     }
     qDebug() << "getMovieFormat" << getMovieFormat();
     if(getMovieFormat() == "mp4")
@@ -687,19 +684,16 @@ void MainWindow::prepareToRecord()
     m_ffp[0]->BfOpen(m_output_file.toUtf8().data(), 0);
 
 //osm
-    if(m_ffp[1])
-    {
-        static PreviewDialog *pw = new PreviewDialog(this);
-        pw->show();
-        static SocketReader *w = nullptr;
-        if(w) {delete w;}
-        w = new SocketReader;
-        w->PlaybackVideo("/home/dev/Documents/foo.mkv", [this](const QImage&img){
-            pw->SetImage(img);//.scaled(pw->width(), pw->height()));
-        });
-        w->RecieveData();
-        m_ffp[1]->BfOpen("127.0.0.1", 9000);
-    }
+//    static PreviewDialog *pw = new PreviewDialog(this);
+//    pw->show();
+//    static SocketReader *w = nullptr;
+//    if(w) {delete w;}
+//    w = new SocketReader;
+//    w->Playback("/home/dev/Documents/foo.mkv", [this](const QImage&img){
+//        pw->SetImage(img);//.scaled(pw->width(), pw->height()));
+//    });
+//    w->RecieveData();
+    m_ffp[1]->BfOpen("127.0.0.1", 9000);
 
     initializeEncoder(m_output_file.toUtf8().data(), m_recording_audio, &m_encoder);
     if(m_recording_audio)
@@ -713,21 +707,6 @@ void MainWindow::prepareToRecord()
 
 void MainWindow::on_pushButtonRecord_clicked()
 {
-#if 1//osm
-    static PreviewDialog *pw = new PreviewDialog(this);
-    pw->show();
-    static SocketReader *w = nullptr;
-    if(w) {delete w;}
-    w = new SocketReader;
-    w->PlaybackImages([this](const QImage&img){
-        pw->SetImage(img);//.scaled(pw->width(), pw->height()));
-    });
-    w->RecieveData();
-    static ScreenStreamer *s = new ScreenStreamer;
-    s->StartStreaming();
-    return;
-#endif//osm
-
     if(m_window_update_timer->isActive())
     {
         if(m_audio_in)
@@ -861,7 +840,7 @@ void MainWindow::setMovieFormat(const QString &format)
     }
     else if(format == "mkv")
     {
-        m_encoder.video_codec_id = AV_CODEC_ID_VP9;
+        m_encoder.video_codec_id = AV_CODEC_ID_VP8;
         m_encoder.audio_codec_id = AV_CODEC_ID_VORBIS;
     }
     else if(format == "gif")
@@ -873,7 +852,7 @@ void MainWindow::setMovieFormat(const QString &format)
 
 QString MainWindow::getMovieFormat() const
 {
-    if(m_encoder.video_codec_id == AV_CODEC_ID_VP9 &&
+    if(m_encoder.video_codec_id == AV_CODEC_ID_VP8 &&
             m_encoder.audio_codec_id == AV_CODEC_ID_VORBIS)
     {
         return "mkv";
