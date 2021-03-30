@@ -139,7 +139,7 @@ private:
     QTimer *m_mouse_tracker;
     QList<QScreen *> m_screens;
     QButtonGroup m_capture_mode_buttons;
-    std::unique_ptr<BufferWriter> m_ffp[2];
+    std::unique_ptr<BufferWriter> m_ffp;
 
     void prepareToRecord();
     void captureRegion();

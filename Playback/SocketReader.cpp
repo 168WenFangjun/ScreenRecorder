@@ -8,6 +8,7 @@
 
 extern "C" void mylog(const char *fmt, ...);
 
+//osm
 #include "Playback/ffplay3.h"
 
 namespace  {
@@ -28,6 +29,7 @@ static int gotframe(void* cb_data, enum AVMediaType media_type, AVFrame* frame, 
     return pthis->GotFrame(frame, media_type);
 }
 
+//osm
 static int readfn(void *opaque, uint8_t *buf, int buf_size)
 {
     SocketReader *pthis = (SocketReader*)opaque;
@@ -69,6 +71,7 @@ void SocketReader::RecieveData()
     int buf_size = 8192;
     static uint8_t * buf = (uint8_t*) malloc(buf_size);
 
+    static FILE* fp=fopen("/home/dev/oosman/Documents/foo2.mkv", "wb");
     reader_thread_ = std::async(std::launch::async, [this, buf_size](){
         while(!stop_)
         {
@@ -85,6 +88,9 @@ void SocketReader::RecieveData()
                 }
             }
             cv_.notify_one();
+
+            fwrite((void*)buf, recsize, 1, fp);
+            fflush(fp);
 
             static size_t total = 0;
             total += recsize;
@@ -179,7 +185,7 @@ int SocketReader::GotFrame(AVFrame* frame, enum AVMediaType media_type)
 
 QImage SocketReader::AvframeToQImage(const AVFrame *pFrame) const
 {
-    QImage image = QImage(pFrame->width/2 * 2, pFrame->height/2 * 2, QImage::Format_RGB32);
+    QImage image = QImage(pFrame->width, pFrame->height, QImage::Format_RGB32);
 
     int stream_index = decoder_->st_index[AVMEDIA_TYPE_VIDEO];
     SwsContext *sws_ctx = sws_getContext (
