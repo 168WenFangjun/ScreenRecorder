@@ -713,7 +713,7 @@ void MainWindow::prepareToRecord()
 
 void MainWindow::on_pushButtonRecord_clicked()
 {
-#if osm
+#if 1//osm
     static PreviewDialog *pw = new PreviewDialog(this);
     pw->show();
     static SocketReader *w = nullptr;
