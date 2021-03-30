@@ -690,6 +690,7 @@ static void add_opt(OptionParseContext *octx, const OptionDef *opt,
 static void init_parse_context(OptionParseContext *octx,
                                const OptionGroupDef *groups, int nb_groups)
 {
+#ifndef Linux
     static const OptionGroupDef global_group = { "global" };
     int i;
 
@@ -707,6 +708,7 @@ static void init_parse_context(OptionParseContext *octx,
     octx->global_opts.arg       = "";
 
     init_opts();
+#endif//Linux
 }
 
 void uninit_parse_context(OptionParseContext *octx)
@@ -2044,6 +2046,7 @@ AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
 {
     int i;
     AVDictionary **opts;
+#ifndef Linux
 
     if (!s->nb_streams)
         return NULL;
@@ -2056,6 +2059,7 @@ AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
     for (i = 0; i < s->nb_streams; i++)
         opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codec->codec_id,
                                     s, s->streams[i], NULL);
+#endif//Linux
     return opts;
 }
 

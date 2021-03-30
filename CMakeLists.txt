@@ -98,17 +98,16 @@ ADD_DEFINITIONS(
 
 # this will run uic on .ui files:
 QT5_WRAP_UI(PROJECT_UI_HDRS
-    ../License/LicenseWidget.ui
-    ../Updater/UpdaterWidget.ui
-    AboutWidget.ui
-    CameraWidget.ui
-    CrossCursorWidget.ui
-    FFMpegRunnerDialog.ui
     MainWindow.ui
-    PreviewWidget.ui
+    CameraWidget.ui
+    AboutWidget.ui
     Settings.ui
-    TabDialog.ui
+    FFMpegRunnerDialog.ui
     TransparentMaximizedWindow.ui
+    TabDialog.ui
+    CrossCursorWidget.ui
+    ../Updater/UpdaterWidget.ui
+    ../License/LicenseWidget.ui
 )
 QT5_ADD_RESOURCES(PROJECT_RESOURCES
     resources.qrc
@@ -274,76 +273,64 @@ IF( MATCHES Windows)
 ENDIF( MATCHES Windows)
 
 SET(PROJECT_SOURCES
-    ${PROJECT_LINUX_SOURCES}
-    ${PROJECT_WINDOWS_SOURCES}
-    ../License/License.cpp
-    ../License/License.h
-    ../License/LicenseComm.cpp
-    ../License/LicenseComm.h
-    ../License/LicenseWidget.cpp
-    ../License/LicenseWidget.h
-    ../License/NetworkRequest.cpp
-    ../License/NetworkRequest.h
-    ../Updater/UpdaterWidget.cpp
-    ../Updater/UpdaterWidget.h
-    AboutWidget.cpp
-    AboutWidget.h
-    AudioFrameProducer.cpp
-    AudioFrameProducer.h
-    AudioInInterface.cpp
-    AudioInInterface.h
-    BufferWriter.cpp
-    BufferWriter.h
-    CameraWidget.cpp
-    CameraWidget.h
-    CrossCursorWidget.cpp
-    CrossCursorWidget.h
-    FFMpegRunner.cpp
-    FFMpegRunner.h
-    FFMpegRunnerDialog.cpp
-    FFMpegRunnerDialog.h
-    Gif/Bucket.cpp
-    Gif/Bucket.h
-    Gif/ColorMap.cpp
-    Gif/ColorMap.h
-    Gif/GifMaker.cpp
-    Gif/GifMaker.h
-    InterfaceFactory.cpp
-    InterfaceFactory.h
-    KeyInterface.cpp
-    KeyInterface.h
-    LinuxFileWriter.cpp
-    LinuxFileWriter.h
-    MainWindow.cpp
-    MainWindow.h
-    MouseInterface.cpp
-    MouseInterface.h
-    NullAudioIn.cpp
-    NullAudioIn.h
-    Playback/ffplay3.c
-    Playback/ffplay3.h
-    PreviewWidget.cpp
-    PreviewWidget.h
-    Settings.cpp
-    SocketReader.cpp
-    SocketReader.h
-    SocketWriter.cpp
-    SocketWriter.h
-    TabDialog.cpp
-    TabDialog.h
-    TransparentMaximizedWindow.cpp
-    TransparentMaximizedWindow.h
-    VideoFrameProducer.cpp
-    VideoFrameProducer.h
-    WatermarkOpacityCalculator.cpp
-    WatermarkOpacityCalculator.h
-    WindowEnumeratorInterface.h
     cmdutils.c
     cmdutils.h
-    ffwrite.c
     ffwrite.h
+    ffwrite.c
     main.cpp
+    CameraWidget.h
+    CameraWidget.cpp
+    CrossCursorWidget.h
+    CrossCursorWidget.cpp
+    MouseInterface.h
+    MouseInterface.cpp
+    KeyInterface.h
+    KeyInterface.cpp
+    AudioInInterface.h
+    AudioInInterface.cpp
+    MainWindow.h
+    MainWindow.cpp
+    TransparentMaximizedWindow.h
+    TransparentMaximizedWindow.cpp
+    AboutWidget.h
+    AboutWidget.cpp
+    NullAudioIn.h
+    NullAudioIn.cpp
+    InterfaceFactory.h
+    InterfaceFactory.cpp
+    FFMpegRunner.h
+    FFMpegRunner.cpp
+    FFMpegRunnerDialog.h
+    FFMpegRunnerDialog.cpp
+    AudioFrameProducer.h
+    AudioFrameProducer.cpp
+    VideoFrameProducer.h
+    VideoFrameProducer.cpp
+    WindowEnumeratorInterface.h
+    Settings.cpp
+    TabDialog.h
+    TabDialog.cpp
+    Gif/GifMaker.h
+    Gif/GifMaker.cpp
+    Gif/ColorMap.h
+    Gif/ColorMap.cpp
+    Gif/Bucket.h
+    Gif/Bucket.cpp
+    WatermarkOpacityCalculator.h
+    WatermarkOpacityCalculator.cpp
+    ../Updater/UpdaterWidget.h
+    ../Updater/UpdaterWidget.cpp
+    ../License/NetworkRequest.h
+    ../License/NetworkRequest.cpp
+    ../License/License.h
+    ../License/License.cpp
+    ../License/LicenseComm.h
+    ../License/LicenseComm.cpp
+    ../License/LicenseWidget.h
+    ../License/LicenseWidget.cpp
     resources/screenrecorder.rc
+    ${PROJECT_WINDOWS_SOURCES}
+    ${PROJECT_LINUX_SOURCES}
 )
 
 IF(UNIX)
@@ -372,7 +359,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
     ${FFMpegLibs}
     ${SoundLibs}
     ${X11Libs}
-    pthread
 )
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS -LC:/work/libs/build/win64)

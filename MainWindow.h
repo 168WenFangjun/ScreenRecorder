@@ -18,7 +18,6 @@ class MainWindow;
 
 class AudioInInterface;
 class AudioFrameProducer;
-class BufferWriter;
 class CameraWidget;
 class CrossCursorWidget;
 class GifMaker;
@@ -56,6 +55,8 @@ signals:
 
 protected:
     void captureFullScreen();
+    inline int writeFile(uint8_t *buf, int buf_size);
+    inline int64_t seekFile(int64_t offset, int whence);
     static int writeFunction(void *opaque, uint8_t *buf, int buf_size);
     static int64_t seekFunction(void *opaque, int64_t offset, int whence);
     void setMovieFormat(const QString &format);
@@ -121,6 +122,7 @@ private:
     QThread *m_audio_producer_thread;
     QThread *m_video_producer_thread;
     QThread *m_hotkey_capture_thread;
+    FILE *m_ffp;
     int m_screen_idx;
     int m_audio_idx;
     bool m_capture_cursor;
@@ -139,7 +141,6 @@ private:
     QTimer *m_mouse_tracker;
     QList<QScreen *> m_screens;
     QButtonGroup m_capture_mode_buttons;
-    std::unique_ptr<BufferWriter> m_ffp;
 
     void prepareToRecord();
     void captureRegion();

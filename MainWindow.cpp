@@ -18,31 +18,25 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "../DS/circularbuffer.h"
-#include "AboutWidget.h"
-#include "AudioFrameProducer.h"
 #include "AudioInInterface.h"
+#include "InterfaceFactory.h"
+#include "AudioFrameProducer.h"
 #include "CameraWidget.h"
 #include "CrossCursorWidget.h"
 #include "FFMpegRunnerDialog.h"
 #include "Gif/GifMaker.h"
-#include "InterfaceFactory.h"
+#include "VideoFrameProducer.h"
+#include "AboutWidget.h"
+#include "../DS/circularbuffer.h"
 #include "LicenseWidget.h"
-#include "LinuxFileWriter.h"
 #include "MainWindow.h"
 #include "MouseInterface.h"
 #include "Settings.h"
-#include "SocketWriter.h"
-#include "TabDialog.h"
 #include "TransparentMaximizedWindow.h"
+#include "TabDialog.h"
 #include "UpdaterWidget.h"
-#include "VideoFrameProducer.h"
 #include "WindowEnumeratorInterface.h"
 #include "ui_MainWindow.h"
-
-//osm
-#include "PreviewWidget.h"
-#include "SocketReader.h"
 
 extern "C" int64_t 	av_gettime (void);
 extern "C" int64_t av_gettime_relative(void);
@@ -216,8 +210,6 @@ MainWindow::MainWindow(QWidget *parent)
     , m_camera_widget(new CameraWidget(this))
     , m_window_enumerator(InterfaceFactory::createWindowEnumeratorInterface())
     , m_mouse_tracker(new QTimer(this))
-    , m_ffp(std::make_unique<SocketWriter>())//osm
-//    , m_ffp(std::make_unique<LinuxFileWriter>())//osm
 {
     qDebug() << "MainWindow" << QThread::currentThreadId()
              << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -329,23 +321,26 @@ void MainWindow::initAvailableScreens()
     });
 }
 
+int MainWindow::writeFile(uint8_t *buf, int buf_size)
+{
+    return fwrite(buf, 1, buf_size, m_ffp);
+}
+
+int64_t MainWindow::seekFile(int64_t offset, int whence)
+{
+    return fseek(m_ffp, offset, whence);
+}
+
 int MainWindow::writeFunction(void *opaque, uint8_t *buf, int buf_size)
 {
     MainWindow *self = (MainWindow*)opaque;
-//    mylog("sending %i bytes over socket\n", buf_size);
-    int bytes_sent = self->m_ffp->BfWrite(buf, buf_size);
-    if(bytes_sent < 1)
-    {
-        mylog("errro sending bytes, errno %i", errno);
-        exit(-1);
-    }
-    return bytes_sent;
+    return self->writeFile(buf, buf_size);
 }
 
 int64_t MainWindow::seekFunction(void *opaque, int64_t offset, int whence)
 {
     MainWindow *self = (MainWindow*)opaque;
-    return self->m_ffp->BfSeek(offset, whence);
+    return self->seekFile(offset, whence);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -563,7 +558,8 @@ void MainWindow::stoppedRecording()
     else
     {
         deinitializeEncoder(&m_encoder);
-        m_ffp->BfClose();
+        fclose(m_ffp);
+        m_ffp = nullptr;
     }
     qDebug() << "getMovieFormat" << getMovieFormat();
     if(getMovieFormat() == "mp4")
@@ -679,23 +675,7 @@ void MainWindow::prepareToRecord()
             mylog("Error opening audio: %s", m_audio_in->GetError());
         }
     }
-    //osm
-//    m_ffp->BfOpen(m_output_file.toUtf8().data(), 0);
-
-    static PreviewWidget *pw = new PreviewWidget(this);
-    pw->setWindowFlags(Qt::Popup);
-    pw->setParent(QApplication::activeWindow());
-    pw->show();
-
-    static SocketReader *w = nullptr;
-    if(w) {delete w;}
-    w = new SocketReader;
-    w->Playback("/home/dev/Documents/foo.mkv", [this](const QImage&img){
-        pw->SetImage(img);
-    });
-    w->RecieveData();
-    m_ffp->BfOpen("127.0.0.1", 9000);
-
+    m_ffp = fopen(m_output_file.toUtf8().data(), "wb");
     initializeEncoder(m_output_file.toUtf8().data(), m_recording_audio, &m_encoder);
     if(m_recording_audio)
     {
